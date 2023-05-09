@@ -1,0 +1,2 @@
+USE practice_sql;
+

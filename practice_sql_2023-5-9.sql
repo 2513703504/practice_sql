@@ -1,0 +1,19 @@
+USE practice_sql;
+SELECT * FROM F0224;
+
+CREATE TABLE F0225
+(
+requester_id INT,
+accepter_id INT,
+accept_date DATE
+);
+
+INSERT INTO F0225 VALUES (1,2,'2016-6-3');
+INSERT INTO F0225 VALUES (1,3,'2016-6-8');
+INSERT INTO F0225 VALUES (2,3,'2016-6-8');
+INSERT INTO F0225 VALUES (3,4,'2016-6-9');
+
+-- 要求：求出好友数最多的ID及其好友数量
+
+SELECT * FROM F0225;
+

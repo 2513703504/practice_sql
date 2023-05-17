@@ -50,13 +50,18 @@ VALUES ('1004', '赵六', '女', '管理', '2021-08-04');
        则该员工的【社保缴纳月份】为【入职日期】的次月；
 */
 
-SELECT * FROM F0321;
+SELECT *
+FROM F0321;
 
-SELECT *,CASE WHEN 类别='普通' THEN
-    date_add(入职日期,INTERVAL 3 MONTH )
-    ELSE date_add(入职日期,INTERVAL 6 MONTH )
-    END AS 转正日期,
-    CASE WHEN extract(DAY FROM 入职日期)<=15
-      THEN CONVERT(入职日期,CHAR (7))
-      ELSE CONVERT((date_add(入职日期,INTERVAL 1 MONTH )),CHAR(7))
- END AS 社保缴纳月份 FROM F0321;
+SELECT *,
+       CASE
+           WHEN 类别 = '普通' THEN
+               DATE_ADD(入职日期, INTERVAL 3 MONTH)
+           ELSE DATE_ADD(入职日期, INTERVAL 6 MONTH)
+           END AS 转正日期,
+       CASE
+           WHEN EXTRACT(DAY FROM 入职日期) <= 15
+               THEN CONVERT(入职日期, CHAR(7))
+           ELSE CONVERT((DATE_ADD(入职日期, INTERVAL 1 MONTH)), CHAR(7))
+           END AS 社保缴纳月份
+FROM F0321;

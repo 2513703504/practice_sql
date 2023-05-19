@@ -1,0 +1,102 @@
+USE practice_sql;
+
+CREATE TABLE F0411
+(
+    DOCNUM INT,
+    STATUS VARCHAR(26)
+);
+INSERT INTO F0411
+VALUES (33, 'FULL');
+INSERT INTO F0411
+VALUES (33, 'NOFULL');
+INSERT INTO F0411
+VALUES (34, 'FULL');
+INSERT INTO F0411
+VALUES (35, 'FULL');
+INSERT INTO F0411
+VALUES (35, 'NOFULL');
+INSERT INTO F0411
+VALUES (36, 'FULL');
+INSERT INTO F0411
+VALUES (37, 'FULL');
+INSERT INTO F0411
+VALUES (38, 'FULL');
+INSERT INTO F0411
+VALUES (38, 'NOFULL');
+
+-- 要求：只取状态为FULL的DOCNUM，如果有同时为NOFULL的DOCNUM则不取
+
+SELECT *
+FROM F0411;
+
+SELECT *
+FROM F0411
+WHERE STATUS = 'FULL';
+
+SELECT *
+FROM F0411
+         LEFT JOIN (SELECT * FROM F0411 WHERE STATUS = 'NOFULL') AS t
+                   ON F0411.DOCNUM = t.DOCNUM;
+
+SELECT t2.a AS DOUCUNM, t2.at AS STATUS
+FROM (SELECT F0411.DOCNUM AS a, F0411.STATUS AS at, t.*
+      FROM F0411
+               LEFT JOIN (SELECT * FROM F0411 WHERE STATUS = 'NOFULL') AS t
+                         ON F0411.DOCNUM = t.DOCNUM) AS t2
+WHERE t2.DOCNUM IS NULL;
+
+SELECT t.Docnum
+FROM (SELECT *,
+             COUNT(1) OVER (PARTITION BY Docnum) AS RN
+      FROM F0411) t
+WHERE t.status = 'FULL'
+  AND t.RN = 1;
+
+Create table F0415 (
+UserId int,
+CheckIn DATETIME
+);
+Insert into F0415 VALUES (1,'2018/12/1 8:25');
+Insert into F0415 VALUES (1,'2018/12/1 8:26');
+Insert into F0415 VALUES (1,'2018/12/1 17:02');
+Insert into F0415 VALUES (1,'2018/12/2 8:27');
+Insert into F0415 VALUES (2,'2018/12/1 8:26');
+Insert into F0415 VALUES (2,'2018/12/1 17:03');
+Insert into F0415 VALUES (2,'2018/12/1 17:29');
+Insert into F0415 VALUES (2,'2018/12/1 18:01');
+
+-- 要求：1、每天上午8:00-9:00，下午18:30-19:00这两个时间段内的最早的一条记录视为“有效”，
+--      2、在这两个时间段内其它打卡数据显示“重复”，否则视为“无效”。
+
+SELECT * FROM F0415;
+
+
+SELECT
+t1.UserID,t1.CheckIn,
+CASE WHEN t1.状态=0 THEN '无效'
+     WHEN t1.状态>0 AND t1.状态2=1 THEN '有效'
+     WHEN t1.状态>0 AND t1.状态2=2 THEN '重复'
+END AS 状态
+FROM
+(SELECT * ,
+-- 按用户，状态，日期进行分组
+ROW_NUMBER() OVER
+(PARTITION BY t.UserID,t.状态,CONVERT(t.CheckIn,DATE ) ORDER BY t.CheckIn) AS 状态2
+FROM
+  (SELECT *,
+   CASE WHEN CONVERT(CONVERT(CheckIn,CHAR),TIME) -- 获取日期的时间
+        BETWEEN '08:00' AND '09:00' THEN 1
+        WHEN CONVERT(CONVERT(CheckIn,CHAR),TIME) -- 获取日期的时间
+        BETWEEN '16:00' AND '18:00' THEN 2
+     ELSE 0
+   END AS 状态
+   FROM F0415
+  ) t
+) t1
+ORDER BY t1.UserID,t1.CheckIn;
+
+SELECT convert(convert(CheckIn,CHAR),TIME) AS time FROM F0415;
+
+SELECT * FROM (SELECT convert(convert(CheckIn,CHAR),TIME) AS time FROM F0415) AS t WHERE time  BETWEEN '08:00' AND '09:00';
+
+SELECT * FROM (SELECT convert(convert(CheckIn,CHAR),TIME) AS time FROM F0415) AS t WHERE time  BETWEEN '16:00' AND '18:00';

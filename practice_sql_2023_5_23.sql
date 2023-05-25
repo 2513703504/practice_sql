@@ -86,71 +86,134 @@ SELECT t.player_id, t.event_date AS first_login
 FROM (SELECT *, ROW_NUMBER() OVER (PARTITION BY player_id ORDER BY event_date) AS RN FROM Activity) AS t
 WHERE t.RN = 1;
 
-SELECT player_id,min(event_date) AS first_login FROM Activity GROUP BY player_id;
+SELECT player_id, MIN(event_date) AS first_login
+FROM Activity
+GROUP BY player_id;
 
 DROP TABLE IF EXISTS Employee;
-Create table If Not Exists Employee (empId int, name varchar(255), supervisor int, salary int);
+CREATE TABLE IF NOT EXISTS Employee
+(
+    empId      int,
+    name       varchar(255),
+    supervisor int,
+    salary     int
+);
 DROP TABLE IF EXISTS Bonus;
-Create table If Not Exists Bonus (empId int, bonus int);
-Truncate table Employee;
-insert into Employee (empId, name, supervisor, salary) values ('3', 'Brad', NULL, '4000');
-insert into Employee (empId, name, supervisor, salary) values ('1', 'John', '3', '1000');
-insert into Employee (empId, name, supervisor, salary) values ('2', 'Dan', '3', '2000');
-insert into Employee (empId, name, supervisor, salary) values ('4', 'Thomas', '3', '4000');
-Truncate table Bonus;
-insert into Bonus (empId, bonus) values ('2', '500');
-insert into Bonus (empId, bonus) values ('4', '2000');
+CREATE TABLE IF NOT EXISTS Bonus
+(
+    empId int,
+    bonus int
+);
+TRUNCATE TABLE Employee;
+INSERT INTO Employee (empId, name, supervisor, salary)
+VALUES ('3', 'Brad', NULL, '4000');
+INSERT INTO Employee (empId, name, supervisor, salary)
+VALUES ('1', 'John', '3', '1000');
+INSERT INTO Employee (empId, name, supervisor, salary)
+VALUES ('2', 'Dan', '3', '2000');
+INSERT INTO Employee (empId, name, supervisor, salary)
+VALUES ('4', 'Thomas', '3', '4000');
+TRUNCATE TABLE Bonus;
+INSERT INTO Bonus (empId, bonus)
+VALUES ('2', '500');
+INSERT INTO Bonus (empId, bonus)
+VALUES ('4', '2000');
 
 /*
  选出所有 bonus < 1000 的员工的 name 及其 bonus。
  */
 
- SELECT name,bonus FROM Employee LEFT JOIN Bonus ON Employee.empId=Bonus.empId WHERE bonus<1000 OR bonus IS NULL;
+SELECT name, bonus
+FROM Employee
+         LEFT JOIN Bonus ON Employee.empId = Bonus.empId
+WHERE bonus < 1000
+   OR bonus IS NULL;
 
 DROP TABLE IF EXISTS Customers;
-Create table If Not Exists Customer (id int, name varchar(25), referee_id int);
-Truncate table Customer;
-insert into Customer (id, name, referee_id) values ('1', 'Will', NULL);
-insert into Customer (id, name, referee_id) values ('2', 'Jane', NULL);
-insert into Customer (id, name, referee_id) values ('3', 'Alex', '2');
-insert into Customer (id, name, referee_id) values ('4', 'Bill', NULL);
-insert into Customer (id, name, referee_id) values ('5', 'Zack', '1');
-insert into Customer (id, name, referee_id) values ('6', 'Mark', '2');
+CREATE TABLE IF NOT EXISTS Customer
+(
+    id         int,
+    name       varchar(25),
+    referee_id int
+);
+TRUNCATE TABLE Customer;
+INSERT INTO Customer (id, name, referee_id)
+VALUES ('1', 'Will', NULL);
+INSERT INTO Customer (id, name, referee_id)
+VALUES ('2', 'Jane', NULL);
+INSERT INTO Customer (id, name, referee_id)
+VALUES ('3', 'Alex', '2');
+INSERT INTO Customer (id, name, referee_id)
+VALUES ('4', 'Bill', NULL);
+INSERT INTO Customer (id, name, referee_id)
+VALUES ('5', 'Zack', '1');
+INSERT INTO Customer (id, name, referee_id)
+VALUES ('6', 'Mark', '2');
 
-SELECT * FROM Customer;
+SELECT *
+FROM Customer;
 /*
  写一个查询语句，返回一个客户列表，列表中客户的推荐人的编号都 不是 2
  */
 
- SELECT name FROM Customer WHERE referee_id<>2 OR referee_id IS NULL;
+SELECT name
+FROM Customer
+WHERE referee_id <> 2
+   OR referee_id IS NULL;
 
 DROP TABLE IF EXISTS orders;
-Create table If Not Exists orders (order_number int, customer_number int);
-Truncate table orders;
-insert into orders (order_number, customer_number) values ('1', '1');
-insert into orders (order_number, customer_number) values ('2', '2');
-insert into orders (order_number, customer_number) values ('3', '3');
-insert into orders (order_number, customer_number) values ('4', '3');
+CREATE TABLE IF NOT EXISTS orders
+(
+    order_number    int,
+    customer_number int
+);
+TRUNCATE TABLE orders;
+INSERT INTO orders (order_number, customer_number)
+VALUES ('1', '1');
+INSERT INTO orders (order_number, customer_number)
+VALUES ('2', '2');
+INSERT INTO orders (order_number, customer_number)
+VALUES ('3', '3');
+INSERT INTO orders (order_number, customer_number)
+VALUES ('4', '3');
 
-SELECT * FROM orders;
+SELECT *
+FROM orders;
 
 /*
  编写一个SQL查询，为下了 最多订单 的客户查找 customer_number 。
  */
 
- SELECT  customer_number FROM orders GROUP BY customer_number ORDER BY count(order_number) DESC LIMIT 1;
+SELECT customer_number
+FROM orders
+GROUP BY customer_number
+ORDER BY COUNT(order_number) DESC
+LIMIT 1;
 
 
 DROP TABLE IF EXISTS World;
-Create table If Not Exists World (name varchar(255), continent varchar(255), area int, population int, gdp bigint);
-Truncate table World;
-insert into World (name, continent, area, population, gdp) values ('Afghanistan', 'Asia', '652230', '25500100', '20343000000');
-insert into World (name, continent, area, population, gdp) values ('Albania', 'Europe', '28748', '2831741', '12960000000');
-insert into World (name, continent, area, population, gdp) values ('Algeria', 'Africa', '2381741', '37100000', '188681000000');
-insert into World (name, continent, area, population, gdp) values ('Andorra', 'Europe', '468', '78115', '3712000000');
-insert into World (name, continent, area, population, gdp) values ('Angola', 'Africa', '1246700', '20609294', '100990000000');
+CREATE TABLE IF NOT EXISTS World
+(
+    name       varchar(255),
+    continent  varchar(255),
+    area       int,
+    population int,
+    gdp        bigint
+);
+TRUNCATE TABLE World;
+INSERT INTO World (name, continent, area, population, gdp)
+VALUES ('Afghanistan', 'Asia', '652230', '25500100', '20343000000');
+INSERT INTO World (name, continent, area, population, gdp)
+VALUES ('Albania', 'Europe', '28748', '2831741', '12960000000');
+INSERT INTO World (name, continent, area, population, gdp)
+VALUES ('Algeria', 'Africa', '2381741', '37100000', '188681000000');
+INSERT INTO World (name, continent, area, population, gdp)
+VALUES ('Andorra', 'Europe', '468', '78115', '3712000000');
+INSERT INTO World (name, continent, area, population, gdp)
+VALUES ('Angola', 'Africa', '1246700', '20609294', '100990000000');
 
-SELECT * FROM World;
+SELECT *
+FROM World;
 /*
  如果一个国家满足下述两个条件之一，则认为该国是 大国 ：
 面积至少为 300 万平方公里（即，3000000 km2），或者
@@ -158,4 +221,7 @@ SELECT * FROM World;
 编写一个 SQL 查询以报告 大国 的国家名称、人口和面积。
  */
 
- SELECT name,population,area FROM World WHERE area>=3000000 OR population>=25000000;
+SELECT name, population, area
+FROM World
+WHERE area >= 3000000
+   OR population >= 25000000;

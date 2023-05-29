@@ -200,7 +200,7 @@ FROM Queries;
 SELECT query_name, ROUND(rating / position, 2) AS quality, rating
 FROM Queries;
 
-SELECT query_name, ROUND(SUM(quality) / COUNT(1), 2) AS quality
+SELECT query_name, ROUND(AVG(quality), 2) AS quality
 FROM (SELECT query_name, ROUND(rating / position, 2) AS quality, rating FROM Queries) AS t
 GROUP BY query_name;
 

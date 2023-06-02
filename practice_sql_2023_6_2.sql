@@ -223,3 +223,72 @@ VALUES ('2', '4', '1');
 SELECT teacher_id, COUNT(DISTINCT subject_id) AS cnt
 FROM Teacher
 GROUP BY teacher_id;
+
+DROP TABLE IF EXISTS Employee;
+CREATE TABLE IF NOT EXISTS Employee
+(
+    id     int,
+    salary int
+);
+TRUNCATE TABLE Employee;
+INSERT INTO Employee (id, salary)
+VALUES ('1', '4');
+
+INSERT INTO Employee (id, salary)
+VALUES ('2', '3');
+INSERT INTO Employee (id, salary)
+VALUES ('3', '3');
+/*
+ 编写一个 SQL 查询，获取并返回 Employee 表中第二高的薪水 。如果不存在第二高的薪水，查询应该返回 null 。
+ 编写一个SQL查询来报告 Employee 表中第 n 高的工资。如果没有第 n 个最高工资，查询应该报告为 null
+ */
+
+SELECT *, dense_rank() OVER (ORDER BY salary DESC ) AS RN
+FROM Employee;
+
+
+WITH t AS (
+    SELECT *, dense_rank() OVER (ORDER BY salary DESC ) AS RN FROM Employee
+)SELECT if(max(RN)>1,(SELECT DISTINCT salary FROM t WHERE RN=2),NULL) AS SecondHighestSalary From t;
+
+
+SELECT DISTINCT salary
+FROM Employee
+ORDER BY salary DESC
+LIMIT 1,1;
+
+SELECT (SELECT DISTINCT salary FROM Employee ORDER BY salary DESC LIMIT 1,1) AS SecondHighestSalary;
+
+CREATE FUNCTION getNthHighestSalary(N int) RETURNS int
+READS SQL DATA
+BEGIN
+    SET N=N-1;
+    RETURN (
+        SELECT DISTINCT salary FROM Employee ORDER BY salary DESC LIMIT N,1
+        );
+END;
+
+SELECT getNthHighestSalary(2);
+
+DROP TABLE IF EXISTS Scores;
+Create table If Not Exists Scores (id int, score DECIMAL(3,2));
+Truncate table Scores;
+insert into Scores (id, score) values ('1', '3.5');
+insert into Scores (id, score) values ('2', '3.65');
+insert into Scores (id, score) values ('3', '4.0');
+insert into Scores (id, score) values ('4', '3.85');
+insert into Scores (id, score) values ('5', '4.0');
+insert into Scores (id, score) values ('6', '3.65');
+
+/*
+ 编写 SQL 查询对分数进行排序。排名按以下规则计算:
+
+分数应按从高到低排列。
+如果两个分数相等，那么两个分数的排名应该相同。
+在排名相同的分数后，排名数应该是下一个连续的整数。换句话说，排名之间不应该有空缺的数字。
+按score降序返回结果表。
+ */
+
+SELECT * FROM Scores;
+
+SELECT score,dense_rank() OVER (ORDER BY score DESC) AS `rank` FROM Scores;

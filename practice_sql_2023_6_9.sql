@@ -129,16 +129,14 @@ VALUES ('3', '2', '4', '2020-02-25');
  */
 
 SELECT (SELECT name
-        FROM MovieRating
-                 LEFT JOIN Users U ON MovieRating.user_id = U.user_id
+        FROM MovieRating,Users U WHERE MovieRating.user_id = U.user_id
         GROUP BY U.user_id, name
         ORDER BY COUNT(U.user_id) DESC, name
         LIMIT 1) AS result
 UNION ALL
 (SELECT title
- FROM MovieRating
-          LEFT JOIN Movies ON Movies.movie_id = MovieRating.movie_id
- WHERE MONTH(created_at) = 2
+ FROM MovieRating,Movies WHERE Movies.movie_id = MovieRating.movie_id
+ AND MONTH(created_at) = 2
  GROUP BY MovieRating.movie_id, title
  ORDER BY AVG(rating) DESC, title
  LIMIT 1);
